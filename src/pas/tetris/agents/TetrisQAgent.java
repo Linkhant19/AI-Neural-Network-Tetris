@@ -58,7 +58,7 @@ public class TetrisQAgent
         // in this example, the input to the neural network is the
         // image of the board unrolled into a giant vector
 
-        final int inputDim = Board.NUM_ROWS * Board.NUM_COLS + 6;
+        final int inputDim = 6;
         final int hidden1 = 128;
         final int hidden2 = 64;
         final int outDim = 1;
@@ -110,7 +110,7 @@ public class TetrisQAgent
         unevenness = calculateUnevenness(boardMatrix);
 
         // Flatten the boardMatrix and append features
-        Matrix inputMatrix = Matrix.full(1, Board.NUM_ROWS * Board.NUM_COLS + 6, 0);
+        Matrix inputMatrix = Matrix.full(1, 6, 0);
         int index = 0;
         inputMatrix.set(0, index++, linesCleared);
         inputMatrix.set(0, index++, holes);
@@ -316,7 +316,9 @@ public class TetrisQAgent
                 int holes = calculateHoles(boardMatrix);
                 int bumps = calculateBumps(boardMatrix);
                 int maxHeight = calculateMaxHeight(boardMatrix);
-                double flatness = calculateFlatness(heights);
+                double flatness = calculateFlatness(
+                    calculateColumnHeights(boardMatrix)
+                );
                 double unevenness = calculateUnevenness(boardMatrix);
 
                 double hval = 0.0;
@@ -418,7 +420,7 @@ public class TetrisQAgent
         // System.out.println(score);
 
         reward += 0.7 * linesCleared;
-        reward += 0.5 * flatness;
+        reward -= 0.5 * flatness;
         reward -= 0.2 * holes;
         reward -= 0.5 * bumps;
         reward -= 0.3 * maxHeight;
